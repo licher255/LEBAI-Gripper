@@ -7,7 +7,7 @@ English — This file is the primary README.
 
 ## Summary
 This repository contains a simple MVC-style Python application to control a Lebai gripper. The project requires **Python 3.10.0**.
-
+The reference is the communication protocol version **v1.5** provided by the official LeBai.
 ---
 
 ## Files

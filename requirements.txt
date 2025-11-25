@@ -1,0 +1,4 @@
+# Runtime requirements for Python 3.10.0 (project requires Python 3.10.0)
+# Add or change versions to match your environment.
+
+pyserial>=3.5        # if the gripper uses serial communication
