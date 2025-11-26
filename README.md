@@ -15,6 +15,11 @@ The reference is the communication protocol version **v1.5** provided by the off
 - controller/gripper_app.py — controller logic  
 - model/lebai_gripper.py — gripper model  
 - view/gripper_view.py — view and UI  
+- i18n
+   -  __init__.py  — i18n logic
+   - lang_extractor.py  — a tool for extracting tr("") string in program
+   - en.json  —  English support
+   - zh.json  —  Chinese support
 - LICENSE — license
 
 ---
@@ -38,11 +43,20 @@ The reference is the communication protocol version **v1.5** provided by the off
 
 ## Usage
 Run the main application:
+```
+python3.10 main.py
+```
+## Translation I18N
+add $tr("")$ to the text or label that need to be translated.
 
-$ python3.10 main.py
+specially if it is a tkinter widget, it need to be also resigned, for example:
+```
+   self.pos_text_label = ttk.Label(ctrl_frame, text=tr("位置 (0-100):"))
+   self.pos_text_label.grid(row=0, column=0, sticky='w', **pad)
 
----
-
+   def _register_translatable_widgets(self):
+        self._register_widget(self.pos_text_label, "位置 (0-100):")
+```
 ## Development notes
 Follow MVC separation in controller/, model/, view/. Edit main.py to change start-up behavior.
 

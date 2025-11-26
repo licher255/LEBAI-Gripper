@@ -17,6 +17,11 @@ English — ：[README.md](README.md)
 - controller/gripper_app.py — 控制器逻辑  
 - model/lebai_gripper.py — 夹持器模型  
 - view/gripper_view.py — 界面与交互  
+- i18n
+   -  __init__.py  — i18n 翻译逻辑
+   - lang_extractor.py  — 翻译字符提取工具
+   - en.json  —  English 支持
+   - zh.json  —  中文支持
 - LICENSE — 许可证
 
 ---
@@ -40,10 +45,21 @@ English — ：[README.md](README.md)
 
 ## 使用
 运行主程序：
-
-$ python3.10 main.py
-
+```
+ $ python3.10 main.py
+ ```
 ---
+## Translation I18N
+add $tr("")$ to the text or label that need to be translated.
+
+specially if it is a tkinter widget, it need to be also resigned, for example:
+```
+   self.pos_text_label = ttk.Label(ctrl_frame, text=tr("位置 (0-100):"))
+   self.pos_text_label.grid(row=0, column=0, sticky='w', **pad)
+   
+   def _register_translatable_widgets(self):
+        self._register_widget(self.pos_text_label, "位置 (0-100):")
+```
 
 ## 开发说明
 遵循 MVC 分层：controller/, model/, view/。修改 main.py 更改程序启动行为。
