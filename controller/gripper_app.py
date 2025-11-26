@@ -6,6 +6,7 @@ from model.lebai_gripper import LEBAI_Gripper
 from view.gripper_view import GripperView
 import tkinter as tk
 
+from i18n import tr, set_language, get_available_languages
 
 class GripperApp:
     def __init__(self, root):
@@ -41,18 +42,18 @@ class GripperApp:
     def connect(self):
         com = self.view.get_selected_com()
         if not com:
-            self.view.append_status("请先选择 COM 口")
+            self.view.append_status(tr("请先选择 COM 口"))
             return
         debug = self.view.is_debug_enabled()
         self.model = LEBAI_Gripper(com=com, debug=debug)
         if self.model.connect():
             self.view.set_connected(True)
-            self.view.append_status(f"✅ 已连接到 {com}")
+            self.view.append_status(tr("✅ 已连接到 {com}").format(com=com))
             self.running = True
             self.polling_thread = threading.Thread(target=self._poll_status, daemon=True)
             self.polling_thread.start()
         else:
-            self.view.append_status(f"❌ 连接失败: {com}")
+            self.view.append_status(tr("❌ 连接失败: {com}").format(com=com))
 
     def disconnect(self):
         self.running = False
@@ -73,7 +74,7 @@ class GripperApp:
         if self.model:
             self.model.disconnect()
         self.view.set_connected(False)
-        self.view.append_status("🔌 已断开连接")
+        self.view.append_status(tr("🔌 已断开连接"))
 
     def _poll_status(self):
         """后台线程：定期读取状态"""
@@ -123,7 +124,7 @@ class GripperApp:
     def start_homing(self):
         if self.model and self.running:
             self.command_queue.put(('start_homing', None))
-            self.view.append_status("🔍 开始找行程...")
+            self.view.append_status(tr("🔍 开始找行程..."))
 
     def save_speed(self):
         if self.model and self.running:
@@ -132,7 +133,7 @@ class GripperApp:
     def stop_auto_homing(self, value):
         if self.model and self.running:
             self.command_queue.put(('stop_auto_homing', value))
-            self.view.append_status(f"自动找行程状态码：{value}")
+            self.view.append_status(tr("自动找行程状态码：{value}").format(value=value))
 
     # === 核心：单一工作线程处理所有命令 ===
     def _command_worker(self):
@@ -150,30 +151,30 @@ class GripperApp:
                     if cmd_name == 'set_position':
                         success = self.model.set_position(arg)
                         if success:
-                            self.root.after(0, lambda v=arg: self.view.append_status(f"✅ 位置设为: {v}%"))
+                            self.root.after(0, lambda v=arg: self.view.append_status(tr("✅ 位置设为: {v}%").format(v=v)))
                     elif cmd_name == 'set_force':
                         success = self.model.set_force(arg)
                         if success:
-                            self.root.after(0, lambda v=arg: self.view.append_status(f"✅ 力度设为: {v}%"))
+                            self.root.after(0, lambda v=arg: self.view.append_status(tr("✅ 力度设为: {v}%").format(v=v)))
                     elif cmd_name == 'set_speed':
                         success = self.model.set_speed(arg)
                         if success:
-                            self.root.after(0, lambda v=arg: self.view.append_status(f"✅ 速度设为: {v}%"))
+                            self.root.after(0, lambda v=arg: self.view.append_status(tr("✅ 速度设为: {v}%").format(v=v)))
                     elif cmd_name == 'start_homing':
                         success = self.model.start_homing()
                         if not success:
-                            self.root.after(0, lambda: self.view.append_status("❌ 找行程启动失败"))
+                            self.root.after(0, lambda: self.view.append_status(tr("❌ 找行程启动失败")))
                     elif cmd_name == 'save_speed':
                         success = self.model.save_speed()
-                        msg = "💾 速度已保存" if success else "❌ 保存速度失败"
+                        msg = tr("💾 速度已保存") if success else tr("❌ 保存速度失败")
                         self.root.after(0, lambda m=msg: self.view.append_status(m))
                     elif cmd_name == 'stop_auto_homing':
                         success = self.model.stop_auto_homing(arg)
-                        self.root.after(0, lambda v=arg: self.view.append_status(f"🛑 停止自动找行程: {v}"))
+                        self.root.after(0, lambda v=arg: self.view.append_status(tr("🛑 停止自动找行程: {v}").format(v=v)))
 
                 except Exception as e:
                     if self.view.is_debug_enabled():
-                        self.root.after(0, lambda err=e: self.view.append_status(f"[Cmd Error] {err}"))
+                        self.root.after(0, lambda err=e: self.view.append_status(tr("[Cmd Error] {err}").format(err=err)))
 
                 # 👇 关键：RS485 需要发送-接收切换时间
                 time.sleep(0.03)  # 30ms，可根据设备调整（10~50ms）
