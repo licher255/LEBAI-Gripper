@@ -44,7 +44,7 @@ The reference is the communication protocol version **v1.5** provided by the off
 ## Usage
 Run the main application:
 ```
-python3.10 main.py
+$ python3.10 main.py
 ```
 ## Translation I18N
 add $tr("")$ to the text or label that need to be translated.
