@@ -68,9 +68,6 @@ class GripperApp:
                 self.command_queue.get_nowait()
             except queue.Empty:
                 break
-        # 不需要发 stop 信号，因为 worker 是 daemon，程序退出即结束
-        # 如果你希望优雅关闭，可以加一个 sentinel，这里简化处理
-
         if self.model:
             self.model.disconnect()
         self.view.set_connected(False)
@@ -80,9 +77,6 @@ class GripperApp:
         """后台线程：定期读取状态"""
         while self.running and self.model:
             try:
-                # 注意：status polling 也走串口！所以也应该走命令队列
-                # 但为简化，我们暂时保留独立读取（风险较低，因为只读）
-                # 更严谨的做法是把 read_xxx 也加入队列
                 pos = self.model.read_position()
                 torque = self.model.read_torque()
                 done = self.model.is_command_done()
@@ -97,7 +91,7 @@ class GripperApp:
                 time.sleep(1)
 
     # === 命令提交方法：全部放入队列 ===
-        # --- 防抖辅助方法 ---
+    # --- 防抖辅助方法 ---
     def _debounced_command(self, key: str, func, *args):
         """防抖执行：取消旧定时器，启动新定时器"""
         if key in self._debounce_timers:
@@ -176,7 +170,7 @@ class GripperApp:
                     if self.view.is_debug_enabled():
                         self.root.after(0, lambda err=e: self.view.append_status(tr("[Cmd Error] {err}").format(err=err)))
 
-                # 👇 关键：RS485 需要发送-接收切换时间
+                # RS485 需要发送-接收切换时间
                 time.sleep(0.03)  # 30ms，可根据设备调整（10~50ms）
 
                 self.command_queue.task_done()
