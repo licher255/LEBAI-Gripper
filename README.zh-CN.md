@@ -9,7 +9,8 @@ English — ：[README.md](README.md)
 ## 概要
 此仓库包含一个简单的 MVC 风格 Python 应用，用于控制 Lebai 夹持器。项目严格要求 **Python 3.10.0**。
 参考文献为乐白官方提供的**v1.5**版本的通讯协议
-
+![alt text](images/image.png)
+![alt text](images/image-1.png)
 ---
 
 ## 文件结构
